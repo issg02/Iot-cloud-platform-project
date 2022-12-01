@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>AWS Open API Sample</title>
+
+        <!-- JQuery 라이브러리 설정 -->
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
+        <!-- 디바이스 조회 자바스크립트 로딩-->
+        <script src="list_devices.js"></script>
+    </head>
+    <body>
+        <h3>My AWS API Sample</h3>
+
+        <h4> 나의 디바이스 목록 <input type="button" value="조회" onclick="Start();" />
+        </h4>
+
+        <table id="mytable">
+            <thead style="background-color:lightgrey">
+                <th>디바이스 명</th>
+                <th>디바이스 ARN</th>
+            </thead>
+            <tbody> </tbody>
+        </table>
+
+        <div id="result">No Data</div>
+    </body>
+</html>
