@@ -8,7 +8,8 @@
 #define TRIG 9 //TRIG 핀 설정 (초음파 보내는 핀)
 #define ECHO 8 //ECHO 핀 설정 (초음파 받는 핀)
 
-
+#include <Servo.h>
+Servo myservo;  //서보모터 사용
 
 #include <ArduinoJson.h>
 
@@ -23,8 +24,11 @@ BearSSLClient sslClient(wifiClient); // Used for SSL/TLS connection, integrates 
 MqttClient    mqttClient(sslClient);
 
 unsigned long lastMillis = 0;
-int sensor = 7; 
+int sensor = 7; //인체감지 센서 7번
+int servopin = 6; // 서보모터 6번
 
+
+int value = 0; // 인체감지 센서 값 value
 
 void setup() {
   
@@ -45,11 +49,13 @@ void setup() {
  
   mqttClient.onMessage(onMessageReceived);
          
+  myservo.attach(servoPin);
 
   pinMode(TRIG, OUTPUT);
 
   pinMode(ECHO, INPUT);
- // pinMode (sensor, INPUT); 
+ 
+  pinMode (sensor, INPUT); 
 }
 
 void loop() {
@@ -74,7 +80,13 @@ void loop() {
    sendMessage(payload);
  }
 
-  
+  value = digitalRead(sensor);    // 인체감지센서인 value
+
+   if(value == HIGH)         
+   {
+    myservo.write(90);                //value값이 HIGH 일때 서보모터 회전
+     delay(15);
+  }
 
 }
 
@@ -120,28 +132,41 @@ void connectMQTT() {
 
 void getDeviceStatus(char* payload) {
 
+  
+  value = digitalRead(sensor);   //인체감지 센서 값 value에 저장
+  char s;           // state 값(Open, Close) s에 
+
+    if(value == HIGH)      // 인체를 감지 했을때
+    {
+         myservo.write(90);    //모터가  90도 돌아가서 열림
+         s= "Open"
+         delay(6000);          //6초후에 자동으로 닫힘
+         myservo.write(0);
+         s= "Closed" 
+    }
 
 
 
-  digitalWrite(TRIG, LOW);
+  digitalWrite(TRIG, LOW);               //초음파
 
   delayMicroseconds(2);
 
-  digitalWrite(TRIG, HIGH);
+  digitalWrite(TRIG, HIGH);             
 
   delayMicroseconds(10);
 
   digitalWrite(TRIG, LOW);
 
     long duration, Distance;
-    duration = pulseIn (ECHO, HIGH);
-    Distance = duration * 17 / 1000; 
+    duration = pulseIn (ECHO, HIGH);          //  초음파가 물체에 도달하고 돌아오는 시간
+    Distance = duration * 17 / 1000;          //  초음파 거리값을 cm으로 환산하는 공식 
 
-     Serial.print(Distance); //측정된 물체로부터 거리값(cm값)을 보여줍니다.
+     Serial.print(Distance);
 
      Serial.println(" Cm");
+     Serial.println(payload);
  
-  sprintf(payload,"{\"state\":{\"reported\":{\"distance\":\"%ld\"}}}",Distance);
+  sprintf(payload,"{\"state\":{\"reported\":{\"distance\":\"%ld\",\"state\":\"%s\"}}}",Distance,s);
 }
  
 void sendMessage(char* payload) {
