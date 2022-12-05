@@ -26,7 +26,6 @@ unsigned long lastMillis = 0;
 int sensor = 7; //인체감지 센서 7번
 int servopin = 6; // 서보모터 6번
 
-
 int value = 0; // 인체감지 센서 값 value
 
 void setup() {
@@ -41,10 +40,8 @@ void setup() {
   }
 
   ArduinoBearSSL.onGetTime(getTime);
-
- 
+  
   sslClient.setEccSlot(0, certificate);
-
  
   mqttClient.onMessage(onMessageReceived);
          
@@ -70,7 +67,6 @@ void loop() {
   // poll for new MQTT messages and send keep alives
   mqttClient.poll();
 
-
   // publish a message roughly every 5 seconds.
   if (millis() - lastMillis > 5000) {
     lastMillis = millis();
@@ -78,7 +74,6 @@ void loop() {
    getDeviceStatus(payload);
    sendMessage(payload);
  }
-
 }
 
 unsigned long getTime() {
@@ -123,42 +118,34 @@ void connectMQTT() {
 
 void getDeviceStatus(char* payload) {
 
-  
-  value = digitalRead(sensor);   //인체감지 센서 값 value에 저장
+   value = digitalRead(sensor);   //인체감지 센서 값 value에 저장
    int s = 0;           
 
     if(value == HIGH)      // 인체를 감지 했을 때 (value 가 HIGH 일 때) 
     {
-         myservo.write(90);    //모터가  90도 돌아가서 열리게 된다.
-         s = 1;                
+      myservo.write(90);    //모터가  90도 돌아가서 열리게 된다.
+      s = 1;                
     }
     else if(value == LOW)
     {
       myservo.write(0);        //인체를 감지하지 않았을 때 (value 가 LOW 일 때) 
-         s= 0;                 // 모터가 0도로 돌아간다.
+      s= 0;                 // 모터가 0도로 돌아간다.
+    
     }
 
-
-  digitalWrite(TRIG, LOW);                  //
-
-  delayMicroseconds(2);
-
-  digitalWrite(TRIG, HIGH);                 //
-
-  delayMicroseconds(10);
-
-  digitalWrite(TRIG, LOW);                  //초음파 송수신
+    digitalWrite(TRIG, LOW);                  //
+    delayMicroseconds(2);
+    digitalWrite(TRIG, HIGH);                 //
+    delayMicroseconds(10);
+    digitalWrite(TRIG, LOW);                  //초음파 송수신
 
     long duration, Distance;
     duration = pulseIn (ECHO, HIGH);          //  초음파가 물체에 도달하고 돌아오는 시간
     Distance = duration * 17 / 1000;          //  초음파 거리값을 cm으로 환산하는 공식 
-
-     Serial.print(Distance);
-     Serial.println(" Cm");
-     Serial.println(payload);
+  
+    Serial.println(payload);                  // payload값 시리얼 모니터에서 확인
 
     const char* a = (s == 1)? "Open" : "Closed";    // s의 값이 1이면 a에 "Open" 문자열을 0이면 "Closed" 문자열 삽입
-
  
   sprintf(payload,"{\"state\":{\"reported\":{\"distance\":\"%ld\",\"Currentstate\":\"%s\"}}}",Distance,a);        
 }
@@ -198,5 +185,4 @@ void onMessageReceived(int messageSize) {
   JsonObject state = root["state"];
   
   char payload[512];  
- 
 }
