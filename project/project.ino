@@ -7,7 +7,6 @@
 
 #define TRIG 9 //TRIG 핀 설정 (초음파 보내는 핀)
 #define ECHO 8 //ECHO 핀 설정 (초음파 받는 핀)
-
 #include <Servo.h>
 Servo myservo;  //서보모터 사용
 
@@ -49,7 +48,7 @@ void setup() {
  
   mqttClient.onMessage(onMessageReceived);
          
-  myservo.attach(servoPin);
+  myservo.attach(servopin);
 
   pinMode(TRIG, OUTPUT);
 
@@ -80,13 +79,13 @@ void loop() {
    sendMessage(payload);
  }
 
-  value = digitalRead(sensor);    // 인체감지센서인 value
-
-   if(value == HIGH)         
-   {
-    myservo.write(90);                //value값이 HIGH 일때 서보모터 회전
-     delay(15);
-  }
+//  value = digitalRead(sensor);    // 인체감지센서인 value
+//
+//   if(value == HIGH)         
+//   {
+//    myservo.write(90);                //value값이 HIGH 일때 서보모터 회전
+//     delay(15);
+//  }
 
 }
 
@@ -134,17 +133,18 @@ void getDeviceStatus(char* payload) {
 
   
   value = digitalRead(sensor);   //인체감지 센서 값 value에 저장
-  char s;           // state 값(Open, Close) s에 
+   int s = 0;           // state 값(Open, Close) s에 
 
     if(value == HIGH)      // 인체를 감지 했을때
     {
          myservo.write(90);    //모터가  90도 돌아가서 열림
-         s= "Open"
-         delay(6000);          //6초후에 자동으로 닫힘
-         myservo.write(0);
-         s= "Closed" 
+         s = 1;
     }
-
+    else if(value == LOW)
+    {
+      myservo.write(0);
+         s= 0;
+    }
 
 
   digitalWrite(TRIG, LOW);               //초음파
@@ -162,11 +162,13 @@ void getDeviceStatus(char* payload) {
     Distance = duration * 17 / 1000;          //  초음파 거리값을 cm으로 환산하는 공식 
 
      Serial.print(Distance);
-
      Serial.println(" Cm");
      Serial.println(payload);
+
+    const char* a = (s == 1)? "Open" : "Closed";
+
  
-  sprintf(payload,"{\"state\":{\"reported\":{\"distance\":\"%ld\",\"state\":\"%s\"}}}",Distance,s);
+  sprintf(payload,"{\"state\":{\"reported\":{\"distance\":\"%ld\",\"Currentstate\":\"%s\"}}}",Distance,a);
 }
  
 void sendMessage(char* payload) {
