@@ -34,7 +34,7 @@ public class Trash implements RequestHandler<Object, String> {
 																	.build();
 					final	String	msg	= "Full";
 					final	String	subject	= "Critical	Warning";
-					if ( dist	< 5) {
+					if ( dist	< 5) {                                  // 거리가 5cm 미만일때 경고메시지 송신된다.                                                                                        
 									PublishRequest	publishRequest	= new PublishRequest(topicArn,	msg,	subject);
 									PublishResult	publishResponse	=	sns.publish(publishRequest);
 					}
