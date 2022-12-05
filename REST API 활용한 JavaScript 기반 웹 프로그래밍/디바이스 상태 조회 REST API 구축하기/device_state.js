@@ -37,8 +37,5 @@ var invokeAPI = function() {
 
 // 데이터 출력을 위한 함수
 var printData = function(result){      
-    document.getElementById("result").innerHTML = "Previous Depth: "+ result.state.reported.Depth +  
-                                                ", Previous State: " + result.state.reported.State+
-				"\nCurrent Depth: "+ result.state.desired.Depth +  
-                                                ", Current State: " + result.state.desired.State;
+    document.getElementById("result").innerHTML = "Current Depth: "+ result.state.reported.distance;
 }
