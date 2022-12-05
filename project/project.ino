@@ -187,11 +187,12 @@ void onMessageReceived(int messageSize) {
 
   
   char payload[512];  
-   if (strcmp(a,"Open")==0) {
-    sprintf(payload,"{\"state\":{\"reported\":{\"LED\":\"%s\"}}}","Open");
+  
+   if (strcmp(a,"Open")==0) {                                                
+    sprintf(payload,"{\"state\":{\"reported\":{\"LED\":\"%s\"}}}","Open");  
     delay(5000);
-  } else if (strcmp(a,"Closed")==0) {
-    myservo.write(0);
+  } else if (strcmp(a,"Closed")==0) {                                       //Currentstate 가 Closed일 때 
+    myservo.write(0);                                                       //서보모터를 0도로 고정시켜 안열리게 한다.
     sprintf(payload,"{\"state\":{\"reported\":{\"LED\":\"%s\"}}}","Closed");
     delay(5000);
   }
