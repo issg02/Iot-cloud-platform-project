@@ -183,6 +183,17 @@ void onMessageReceived(int messageSize) {
   deserializeJson(doc, buffer);
   JsonObject root = doc.as<JsonObject>();
   JsonObject state = root["state"];
+  const char* a = state["Currentstate"];
+
   
   char payload[512];  
+   if (strcmp(a,"Open")==0) {
+    sprintf(payload,"{\"state\":{\"reported\":{\"LED\":\"%s\"}}}","Open");
+    delay(5000);
+  } else if (strcmp(a,"Closed")==0) {
+    myservo.write(0);
+    sprintf(payload,"{\"state\":{\"reported\":{\"LED\":\"%s\"}}}","Closed");
+    delay(5000);
+  }
+  
 }
