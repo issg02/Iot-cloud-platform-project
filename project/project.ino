@@ -7,7 +7,7 @@
 
 #define TRIG 9 //TRIG 핀 설정 (초음파 보내는 핀)
 #define ECHO 8 //ECHO 핀 설정 (초음파 받는 핀)
-#include <Servo.h>
+#include <Servo.h> // 서보모터 라이브러리 포함
 Servo myservo;  //서보모터 사용
 
 #include <ArduinoJson.h>
@@ -48,13 +48,13 @@ void setup() {
  
   mqttClient.onMessage(onMessageReceived);
          
-  myservo.attach(servopin);
+  myservo.attach(servopin);           //서보모터 활성화
 
-  pinMode(TRIG, OUTPUT);
+  pinMode(TRIG, OUTPUT);              //초음파 센서 TRIG OUTPUT
 
-  pinMode(ECHO, INPUT);
+  pinMode(ECHO, INPUT);               // 초음파 센서 ECHO INPUT
  
-  pinMode (sensor, INPUT); 
+  pinMode (sensor, INPUT);            // 인체 감지 센서 sensor INPUT 
 }
 
 void loop() {
@@ -78,14 +78,6 @@ void loop() {
    getDeviceStatus(payload);
    sendMessage(payload);
  }
-
-//  value = digitalRead(sensor);    // 인체감지센서인 value
-//
-//   if(value == HIGH)         
-//   {
-//    myservo.write(90);                //value값이 HIGH 일때 서보모터 회전
-//     delay(15);
-//  }
 
 }
 
@@ -133,29 +125,29 @@ void getDeviceStatus(char* payload) {
 
   
   value = digitalRead(sensor);   //인체감지 센서 값 value에 저장
-   int s = 0;           // state 값(Open, Close) s에 
+   int s = 0;           
 
-    if(value == HIGH)      // 인체를 감지 했을때
+    if(value == HIGH)      // 인체를 감지 했을 때 (value 가 HIGH 일 때) 
     {
-         myservo.write(90);    //모터가  90도 돌아가서 열림
-         s = 1;
+         myservo.write(90);    //모터가  90도 돌아가서 열리게 된다.
+         s = 1;                
     }
     else if(value == LOW)
     {
-      myservo.write(0);
-         s= 0;
+      myservo.write(0);        //인체를 감지하지 않았을 때 (value 가 LOW 일 때) 
+         s= 0;                 // 모터가 0도로 돌아간다.
     }
 
 
-  digitalWrite(TRIG, LOW);               //초음파
+  digitalWrite(TRIG, LOW);                  //
 
   delayMicroseconds(2);
 
-  digitalWrite(TRIG, HIGH);             
+  digitalWrite(TRIG, HIGH);                 //
 
   delayMicroseconds(10);
 
-  digitalWrite(TRIG, LOW);
+  digitalWrite(TRIG, LOW);                  //초음파 송수신
 
     long duration, Distance;
     duration = pulseIn (ECHO, HIGH);          //  초음파가 물체에 도달하고 돌아오는 시간
@@ -165,10 +157,10 @@ void getDeviceStatus(char* payload) {
      Serial.println(" Cm");
      Serial.println(payload);
 
-    const char* a = (s == 1)? "Open" : "Closed";
+    const char* a = (s == 1)? "Open" : "Closed";    // s의 값이 1이면 a에 "Open" 문자열을 0이면 "Closed" 문자열 삽입
 
  
-  sprintf(payload,"{\"state\":{\"reported\":{\"distance\":\"%ld\",\"Currentstate\":\"%s\"}}}",Distance,a);
+  sprintf(payload,"{\"state\":{\"reported\":{\"distance\":\"%ld\",\"Currentstate\":\"%s\"}}}",Distance,a);        
 }
  
 void sendMessage(char* payload) {
@@ -204,8 +196,6 @@ void onMessageReceived(int messageSize) {
   deserializeJson(doc, buffer);
   JsonObject root = doc.as<JsonObject>();
   JsonObject state = root["state"];
-  //const char* led = state["LED"];
-  //Serial.println(led);
   
   char payload[512];  
  
