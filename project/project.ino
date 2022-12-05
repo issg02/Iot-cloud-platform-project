@@ -180,13 +180,6 @@ void onMessageReceived(int messageSize) {
   //const char* led = state["LED"];
   //Serial.println(led);
   
-  char payload[512];
-
-
-long duration, Distance;
-duration = pulseIn (ECHO, HIGH);
-Distance = duration * 17 / 1000; 
-
-  
+  char payload[512];  
  
 }
